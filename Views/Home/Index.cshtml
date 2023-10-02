@@ -1,0 +1,81 @@
+﻿<html>
+<head>
+    <title>PomeloCase</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PomeloCase.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+
+
+            <div class="col-md-4">
+                Kaç Aylık Döngü İstediğinizi Giriniz
+            </div>
+            <div class="col-md-4"><input class="form-control" type="text" id="loop" /></div>
+            <div class="col-md-4"><input type="button" id="start" value="Başla" class="btn btn-success" /></div>
+        </div>
+    </div>
+    <div class="container-fluiid">
+        <div id="rabbits" class="row">
+            
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+
+
+    <script>$("#start").click(function () {
+    var loop = $('#loop').val();
+    $.ajax({
+        url: "/Home/Start?loop=" + loop,
+        type: 'GET',
+        dataType: 'json', // added data type
+        success: function (startedCount) {
+            debugger;
+            $("#loop").prop("disabled", true);
+            $("#start").prop("disabled", true);
+
+            for (i = 0; i < startedCount; i++)
+            {
+                $("#rabbits").append("<div class='col-md-1'><img src='https://cdn-icons-png.flaticon.com/256/220/220107.png' style='height:50px;width:70px;' /></div>");
+            }
+
+            debugger;
+            var second = loop * 1000;
+            
+            setInterval(function () {
+                
+                $.ajax({
+                    url: "/Home/Ovulation",
+                    type: 'GET',
+                    dataType: 'json', // added data type
+                    success: function (record) {
+                        for (i = 0; i < record; i++) {
+                            $("#rabbits").append("<div class='col-md-1'><img src='https://cdn-icons-png.flaticon.com/256/220/220107.png' style='height:50px;width:70px;' /></div>");
+                        }
+                    }
+                });
+                $.ajax({
+                    url: "/Home/DeathControl",
+                    type: 'GET',
+                    dataType: 'json', // added data type
+                    success: function (lastcount) {
+                        for (i = 0; i < lastcount; i++) {
+                            $('#rabbits').children().last().remove();
+                        }
+                    }
+                });
+            }, second);
+
+
+        }
+    });
+});
+    </script>
+</body>
+</html>
